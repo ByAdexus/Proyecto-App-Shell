@@ -1,6 +1,7 @@
 // lib/components/footer.dart
 import 'package:flutter/material.dart';
 
+
 class Footer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -46,8 +47,8 @@ class Footer extends StatelessWidget {
           SizedBox(height: 10), // Espacio antes del logo
           Center(
             child: Image.asset(
-              'assets/images/zorro_logo.png', // Asegúrate de tener tu logo aquí
-              height: 50,
+              './fox_logo.png', // Asegúrate de tener tu logo aquí
+              height: 10,
             ),
           ),
         ],

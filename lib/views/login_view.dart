@@ -7,8 +7,6 @@ import '../viewmodels/login_viewmodel.dart'; // Importa tu ViewModel
 class LoginView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final loginViewModel = Provider.of<LoginViewModel>(context); // Accede al ViewModel
-
     return Scaffold(
       appBar: AppBar(title: Text('Iniciar Sesión')),
       body: Center(
@@ -29,30 +27,38 @@ class LoginView extends StatelessWidget {
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 16),
-                  TextField(
-                    onChanged: loginViewModel.setUsername,
-                    decoration: InputDecoration(
-                      labelText: 'Usuario',
-                      labelStyle: TextStyle(fontSize: 18),
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  TextField(
-                    obscureText: true,
-                    onChanged: loginViewModel.setPassword,
-                    decoration: InputDecoration(
-                      labelText: 'Contraseña',
-                      labelStyle: TextStyle(fontSize: 18),
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () async {
-                      await loginViewModel.login(); // Llama al método de inicio de sesión
+                  Consumer<LoginViewModel>(
+                    builder: (context, loginViewModel, child) {
+                      return Column(
+                        children: [
+                          TextField(
+                            onChanged: loginViewModel.setUsername,
+                            decoration: InputDecoration(
+                              labelText: 'Usuario',
+                              labelStyle: TextStyle(fontSize: 18),
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          SizedBox(height: 16),
+                          TextField(
+                            obscureText: true,
+                            onChanged: loginViewModel.setPassword,
+                            decoration: InputDecoration(
+                              labelText: 'Contraseña',
+                              labelStyle: TextStyle(fontSize: 18),
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () async {
+                              await loginViewModel.login(); // Llama al método de inicio de sesión
+                            },
+                            child: Text('Iniciar Sesión', style: TextStyle(fontSize: 18)),
+                          ),
+                        ],
+                      );
                     },
-                    child: Text('Iniciar Sesión', style: TextStyle(fontSize: 18)),
                   ),
                 ],
               ),
