@@ -1,16 +1,12 @@
-// lib/views/main_view.dart
 import 'package:flutter/material.dart';
 import 'package:kerudos/components/footer.dart';
 import 'package:kerudos/components/header.dart';
 import 'package:kerudos/viewmodels/login_viewmodel.dart';
+import 'package:kerudos/viewmodels/main_viewmodel.dart';
+import 'package:kerudos/viewmodels/register_viewmodel.dart';
 import 'package:provider/provider.dart';
-import '../components/sidebar.dart'; // Asegúrate de importar el Sidebar
+import '../components/sidebar.dart';
 import 'home_view.dart';
-import 'login_view.dart'; // Asegúrate de tener vistas para Login y Register
-import 'register_view.dart';
-//import 'chat_view.dart';
-//import 'footer.dart';
-//import 'header.dart';
 
 class MainView extends StatelessWidget {
   @override
@@ -18,20 +14,25 @@ class MainView extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => LoginViewModel()),
-        // Add more providers if needed
+        ChangeNotifierProvider(create: (_) => RegisterViewModel()),
+        ChangeNotifierProvider(create: (_) => NavigationViewModel()), // Make sure this is included
       ],
       child: Scaffold(
         body: Row(
           children: [
-            Sidebar(), // Sidebar en la izquierda
+            Sidebar(), // Ensure Sidebar is properly built
             Expanded(
               child: Column(
                 children: [
-                  Header(), // Header en la parte superior
+                  Header(), // Header at the top
                   Expanded(
-                    child: HomeView(), // Aquí irá el contenido principal (puedes cambiarlo después)
+                    child: Consumer<NavigationViewModel>(
+                      builder: (context, navigationViewModel, _) {
+                        return navigationViewModel.selectedView; // Ensure this is valid
+                      },
+                    ),
                   ),
-                  Footer(), // Footer ocupando todo el ancho
+                  Footer(), // Footer at the bottom
                 ],
               ),
             ),

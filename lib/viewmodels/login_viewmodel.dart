@@ -1,50 +1,35 @@
-// lib/viewmodels/login_viewmodel.dart
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginViewModel extends ChangeNotifier {
-  String username = '';
-  String password = '';
-  bool _isLoggedIn = false;
+class LoginViewModel with ChangeNotifier {
+  String _username = '';
+  String _password = '';
+  bool _isLoggedIn = false; // Track login state
 
-  bool get isLoggedIn => _isLoggedIn;
+  String get username => _username;
+  bool get isLoggedIn => _isLoggedIn; // Provide access to login state
 
-  void setUsername(String value) {
-    username = value;
+  void setUsername(String username) {
+    _username = username;
     notifyListeners();
   }
 
-  void setPassword(String value) {
-    password = value;
+  void setPassword(String password) {
+    _password = password;
     notifyListeners();
   }
 
   Future<void> login() async {
-    if (username.isNotEmpty && password.isNotEmpty) {
-      // Aquí iría la lógica para autenticar al usuario
-      // Simulación de autenticación
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('username', username);
+    // Logic to log in the user, validate username and password
+    if (_username == "admin" && _password == "password") { // Example login check
       _isLoggedIn = true;
       notifyListeners();
-      print('Iniciando sesión con: $username');
-    } else {
-      print('Por favor, completa todos los campos.');
     }
   }
 
-  Future<void> logout() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('username');
+  void logout() {
     _isLoggedIn = false;
-    notifyListeners();
-  }
-
-  Future<void> checkLoginStatus() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (prefs.containsKey('username')) {
-      _isLoggedIn = true;
-    }
+    _username = '';
+    _password = '';
     notifyListeners();
   }
 }

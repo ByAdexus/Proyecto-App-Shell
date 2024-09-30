@@ -1,9 +1,20 @@
-// lib/components/sidebar.dart
 import 'package:flutter/material.dart';
+import 'package:kerudos/viewmodels/main_viewmodel.dart';
+import 'package:kerudos/viewmodels/register_viewmodel.dart';
+import 'package:kerudos/views/chat_view.dart';
+import 'package:kerudos/views/search_view.dart';
+import 'package:provider/provider.dart';
+import 'package:kerudos/viewmodels/login_viewmodel.dart';
+import 'package:kerudos/views/home_view.dart';
+import 'package:kerudos/views/login_view.dart';
+import 'package:kerudos/views/profile_view.dart'; // Importar ProfileView
 
 class Sidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var loginViewModel = context.watch<LoginViewModel>(); // Observar el estado de login
+    var registerViewModel = context.watch<RegisterViewModel>();
+
     return Container(
       width: 100,
       color: Colors.blueGrey[800],
@@ -13,25 +24,88 @@ class Sidebar extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Text(
               'KERUDOS',
-              style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold, fontFamily: 'CustomFont'),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold),
             ),
           ),
-          _buildSidebarItem(icon: Icons.home, label: 'Home'),
-          _buildSidebarItem(icon: Icons.search, label: 'Buscar'),
-          _buildSidebarItem(icon: Icons.chat, label: 'Chatear'),
-          _buildSidebarItem(icon: Icons.person, label: 'Perfil'),
+          // Home
+          _buildSidebarItem(
+            icon: Icons.home,
+            label: 'Home',
+            onTap: () {
+              context.read<NavigationViewModel>().changeView(HomeView());
+            },
+          ),
+          // Buscar
+          _buildSidebarItem(
+            icon: Icons.search,
+            label: 'Buscar',
+            onTap: () {
+              context.read<NavigationViewModel>().changeView(SearchView());
+            },
+          ),
+          // Chatear
+          _buildSidebarItem(
+            icon: Icons.chat,
+            label: 'Chatear',
+            onTap: loginViewModel.isLoggedIn || registerViewModel.isLoggedIn
+                ? () {
+                     context.read<NavigationViewModel>().changeView(ChatView());
+                  }
+                : null, // Desactivar si no está logueado
+            enabled: loginViewModel.isLoggedIn || registerViewModel.isLoggedIn // Habilitar o no según login
+          ),
+          // Perfil (Dependiendo del estado de autenticación)
+          _buildSidebarItem(
+            icon: Icons.person,
+            label: 'Perfil',
+            onTap: loginViewModel.isLoggedIn || registerViewModel.isLoggedIn
+                ? () {
+                    context.read<NavigationViewModel>().changeView(ProfileView()); // Si está autenticado, mostrar el perfil
+                  }
+                : () {
+                    context.read<NavigationViewModel>().changeView(LoginView()); // Si no está autenticado, redirigir a login
+                  },
+            enabled: true, // Siempre habilitado pero redirige según estado
+          ),
+          // Logout
+          _buildSidebarItem(
+            icon: Icons.logout,
+            label: 'Logout',
+            onTap: loginViewModel.isLoggedIn || registerViewModel.isLoggedIn
+                ? () {
+                    loginViewModel.logout(); // Cerrar sesión
+                    registerViewModel.logout();
+                    context.read<NavigationViewModel>().changeView(LoginView()); // Redirigir a login
+                  }
+                : null,
+            enabled: loginViewModel.isLoggedIn,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildSidebarItem({required IconData icon, required String label}) {
-    return Column(
-      children: [
-        Icon(icon, color: Colors.white),
-        Text(label, style: TextStyle(color: Colors.white)),
-        SizedBox(height: 8), // Espacio entre íconos y texto
-      ],
+  Widget _buildSidebarItem({
+    required IconData icon,
+    required String label,
+    required VoidCallback? onTap, // Permitir nulo para deshabilitar
+    bool enabled = true, // Habilitado por defecto
+  }) {
+    return GestureDetector(
+      onTap: enabled ? onTap : null, // Solo activar si está habilitado
+      child: Opacity(
+        opacity: enabled ? 1.0 : 0.5, // Opacidad si está deshabilitado
+        child: Column(
+          children: [
+            Icon(icon, color: Colors.white),
+            Text(label, style: TextStyle(color: Colors.white)),
+            SizedBox(height: 8), // Espacio entre ícono y texto
+          ],
+        ),
+      ),
     );
   }
 }

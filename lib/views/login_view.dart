@@ -1,8 +1,11 @@
 // lib/views/login_view.dart
 import 'package:flutter/material.dart';
+import 'package:kerudos/viewmodels/main_viewmodel.dart';
+import 'package:kerudos/views/home_view.dart';
+import 'package:kerudos/views/register_view.dart';
 import 'package:provider/provider.dart';
-import '../components/header.dart';
 import '../viewmodels/login_viewmodel.dart'; // Importa tu ViewModel
+// Importa el NavigationViewModel
 
 class LoginView extends StatelessWidget {
   @override
@@ -53,8 +56,20 @@ class LoginView extends StatelessWidget {
                           ElevatedButton(
                             onPressed: () async {
                               await loginViewModel.login(); // Llama al método de inicio de sesión
+                              if (loginViewModel.isLoggedIn) {
+                                // Navigate to the home or main view after successful login
+                                context.read<NavigationViewModel>().changeView(HomeView());
+                              }
                             },
                             child: Text('Iniciar Sesión', style: TextStyle(fontSize: 18)),
+                          ),
+                          SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              // Use NavigationViewModel to navigate to RegisterView
+                              context.read<NavigationViewModel>().changeView(RegisterView());
+                            },
+                            child: Text('No tienes cuenta? Regístrate', style: TextStyle(fontSize: 18)),
                           ),
                         ],
                       );
