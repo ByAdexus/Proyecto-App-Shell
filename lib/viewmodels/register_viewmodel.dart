@@ -54,7 +54,7 @@ class RegisterViewModel with ChangeNotifier {
     String? storedUsername = prefs.getString('username');
     String? storedPassword = prefs.getString('password');
 
-    if (storedUsername != null && storedPassword != null) {
+    if (storedPassword != null) {
       _isLoggedIn = true;
       notifyListeners();
     }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class SearchView extends StatefulWidget {
+  const SearchView({super.key});
+
   @override
   _SearchViewState createState() => _SearchViewState();
 }
@@ -31,7 +33,7 @@ class _SearchViewState extends State<SearchView> {
       length: 3, // Number of tabs
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Buscar'),
+          title: const Text('Buscar'),
           bottom: TabBar(
             labelColor: Theme.of(context).primaryColor,
             unselectedLabelColor: Colors.grey,
@@ -41,7 +43,7 @@ class _SearchViewState extends State<SearchView> {
                 selectedTabIndex = index;
               });
             },
-            tabs: [
+            tabs: const [
               Tab(text: 'Publicaciones'),
               Tab(text: 'Amigos'),
               Tab(text: 'Grupos'),
@@ -57,7 +59,7 @@ class _SearchViewState extends State<SearchView> {
                 onChanged: updateSearchQuery,
                 decoration: InputDecoration(
                   hintText: 'Buscar amigos, grupos, o publicaciones...',
-                  prefixIcon: Icon(Icons.search),
+                  prefixIcon: const Icon(Icons.search),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -78,7 +80,7 @@ class _SearchViewState extends State<SearchView> {
 
   // Here is the simplified _buildDefaultContent method
   Widget _buildDefaultContent() {
-    return Center(
+    return const Center(
       child: Text('No search query. Showing default content.'),
     );
   }
@@ -90,17 +92,24 @@ class _SearchViewState extends State<SearchView> {
     if (selectedTabIndex == 0) {
       // Search results for posts
       searchResults = popularPosts
-          .where((post) => post.toLowerCase().contains(searchQuery.toLowerCase()))
+          .where(
+              (post) => post.toLowerCase().contains(searchQuery.toLowerCase()))
           .toList();
     } else if (selectedTabIndex == 1) {
       // Search results for friends
       searchResults = recentContacts
-          .where((friend) => friend.toLowerCase().contains(searchQuery.toLowerCase()))
+          .where((friend) =>
+              friend.toLowerCase().contains(searchQuery.toLowerCase()))
           .toList();
     } else if (selectedTabIndex == 2) {
       // Search results for groups (You can add real group data here)
-      searchResults = ['Grupo Flutter', 'Desarrolladores AI', 'Amantes de la tecnología']
-          .where((group) => group.toLowerCase().contains(searchQuery.toLowerCase()))
+      searchResults = [
+        'Grupo Flutter',
+        'Desarrolladores AI',
+        'Amantes de la tecnología'
+      ]
+          .where((group) =>
+              group.toLowerCase().contains(searchQuery.toLowerCase()))
           .toList();
     }
 
@@ -109,12 +118,12 @@ class _SearchViewState extends State<SearchView> {
       itemBuilder: (context, index) {
         return ListTile(
           leading: selectedTabIndex == 0
-              ? Icon(Icons.article)
+              ? const Icon(Icons.article)
               : selectedTabIndex == 1
                   ? CircleAvatar(child: Text(searchResults[index][0]))
-                  : Icon(Icons.group),
+                  : const Icon(Icons.group),
           title: Text(searchResults[index]),
-          subtitle: Text('Resultado de búsqueda'),
+          subtitle: const Text('Resultado de búsqueda'),
         );
       },
     );

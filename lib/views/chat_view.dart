@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ChatView extends StatefulWidget {
+  const ChatView({super.key});
+
   @override
   _ChatViewState createState() => _ChatViewState();
 }
@@ -19,7 +21,7 @@ class _ChatViewState extends State<ChatView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat'),
+        title: const Text('Chat'),
       ),
       body: Row(
         children: [
@@ -36,7 +38,8 @@ class _ChatViewState extends State<ChatView> {
                   trailing: Text(contact.time),
                   onTap: () {
                     setState(() {
-                      currentChat = contact.name; // Cambia a la pestaña de chat correspondiente
+                      currentChat = contact
+                          .name; // Cambia a la pestaña de chat correspondiente
                     });
                   },
                 );
@@ -46,7 +49,10 @@ class _ChatViewState extends State<ChatView> {
           // Vista de chat a la derecha
           Expanded(
             flex: 2,
-            child: currentChat != null ? ChatTab(contactName: currentChat!) : Center(child: Text('Selecciona un contacto para chatear')),
+            child: currentChat != null
+                ? ChatTab(contactName: currentChat!)
+                : const Center(
+                    child: Text('Selecciona un contacto para chatear')),
           ),
         ],
       ),
@@ -67,7 +73,7 @@ class Contact {
 class ChatTab extends StatelessWidget {
   final String contactName;
 
-  const ChatTab({Key? key, required this.contactName}) : super(key: key);
+  const ChatTab({super.key, required this.contactName});
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +96,7 @@ class ChatTab extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
-              Expanded(
+              const Expanded(
                 child: TextField(
                   decoration: InputDecoration(
                     hintText: 'Escribe un mensaje...',
@@ -99,7 +105,7 @@ class ChatTab extends StatelessWidget {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.send),
+                icon: const Icon(Icons.send),
                 onPressed: () {
                   // Acción de enviar mensaje (puedes agregar la lógica aquí)
                 },

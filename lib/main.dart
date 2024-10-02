@@ -4,10 +4,12 @@ import 'package:kerudos/views/main_view.dart';
 import 'views/main_view.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -15,12 +17,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.purple[200], // Lila claro
         scaffoldBackgroundColor: Colors.white, // Fondo blanco
-        buttonTheme: ButtonThemeData(buttonColor: Colors.pink[200]), // Botones en rosa
+        buttonTheme:
+            ButtonThemeData(buttonColor: Colors.pink[200]), // Botones en rosa
         textTheme: const TextTheme(
           bodyMedium: TextStyle(color: Colors.black),
         ),
       ),
-      home: MainView(), // MainView como la vista principal
+      home: const MainView(), // MainView como la vista principal
     );
   }
 }

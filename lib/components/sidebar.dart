@@ -10,9 +10,12 @@ import 'package:kerudos/views/login_view.dart';
 import 'package:kerudos/views/profile_view.dart'; // Importar ProfileView
 
 class Sidebar extends StatelessWidget {
+  const Sidebar({super.key});
+
   @override
   Widget build(BuildContext context) {
-    var loginViewModel = context.watch<LoginViewModel>(); // Observar el estado de login
+    var loginViewModel =
+        context.watch<LoginViewModel>(); // Observar el estado de login
     var registerViewModel = context.watch<RegisterViewModel>();
 
     return Container(
@@ -20,8 +23,8 @@ class Sidebar extends StatelessWidget {
       color: Colors.blueGrey[800],
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
+          const Padding(
+            padding: EdgeInsets.all(16.0),
             child: Text(
               'KERUDOS',
               style: TextStyle(
@@ -35,7 +38,7 @@ class Sidebar extends StatelessWidget {
             icon: Icons.home,
             label: 'Home',
             onTap: () {
-              context.read<NavigationViewModel>().changeView(HomeView());
+              context.read<NavigationViewModel>().changeView(const HomeView());
             },
           ),
           // Buscar
@@ -43,30 +46,35 @@ class Sidebar extends StatelessWidget {
             icon: Icons.search,
             label: 'Buscar',
             onTap: () {
-              context.read<NavigationViewModel>().changeView(SearchView());
+              context.read<NavigationViewModel>().changeView(const SearchView());
             },
           ),
           // Chatear
           _buildSidebarItem(
-            icon: Icons.chat,
-            label: 'Chatear',
-            onTap: loginViewModel.isLoggedIn || registerViewModel.isLoggedIn
-                ? () {
-                     context.read<NavigationViewModel>().changeView(ChatView());
-                  }
-                : null, // Desactivar si no está logueado
-            enabled: loginViewModel.isLoggedIn || registerViewModel.isLoggedIn // Habilitar o no según login
-          ),
+              icon: Icons.chat,
+              label: 'Chatear',
+              onTap: loginViewModel.isLoggedIn || registerViewModel.isLoggedIn
+                  ? () {
+                      context
+                          .read<NavigationViewModel>()
+                          .changeView(const ChatView());
+                    }
+                  : null, // Desactivar si no está logueado
+              enabled: loginViewModel.isLoggedIn ||
+                  registerViewModel.isLoggedIn // Habilitar o no según login
+              ),
           // Perfil (Dependiendo del estado de autenticación)
           _buildSidebarItem(
             icon: Icons.person,
             label: 'Perfil',
             onTap: loginViewModel.isLoggedIn || registerViewModel.isLoggedIn
                 ? () {
-                    context.read<NavigationViewModel>().changeView(ProfileView()); // Si está autenticado, mostrar el perfil
+                    context.read<NavigationViewModel>().changeView(
+                        const ProfileView()); // Si está autenticado, mostrar el perfil
                   }
                 : () {
-                    context.read<NavigationViewModel>().changeView(LoginView()); // Si no está autenticado, redirigir a login
+                    context.read<NavigationViewModel>().changeView(
+                        const LoginView()); // Si no está autenticado, redirigir a login
                   },
             enabled: true, // Siempre habilitado pero redirige según estado
           ),
@@ -78,7 +86,9 @@ class Sidebar extends StatelessWidget {
                 ? () {
                     loginViewModel.logout(); // Cerrar sesión
                     registerViewModel.logout();
-                    context.read<NavigationViewModel>().changeView(LoginView()); // Redirigir a login
+                    context
+                        .read<NavigationViewModel>()
+                        .changeView(const LoginView()); // Redirigir a login
                   }
                 : null,
             enabled: loginViewModel.isLoggedIn,
@@ -101,8 +111,8 @@ class Sidebar extends StatelessWidget {
         child: Column(
           children: [
             Icon(icon, color: Colors.white),
-            Text(label, style: TextStyle(color: Colors.white)),
-            SizedBox(height: 8), // Espacio entre ícono y texto
+            Text(label, style: const TextStyle(color: Colors.white)),
+            const SizedBox(height: 8), // Espacio entre ícono y texto
           ],
         ),
       ),

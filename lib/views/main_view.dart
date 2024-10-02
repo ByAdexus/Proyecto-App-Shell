@@ -6,33 +6,36 @@ import 'package:kerudos/viewmodels/main_viewmodel.dart';
 import 'package:kerudos/viewmodels/register_viewmodel.dart';
 import 'package:provider/provider.dart';
 import '../components/sidebar.dart';
-import 'home_view.dart';
 
 class MainView extends StatelessWidget {
+  const MainView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => LoginViewModel()),
         ChangeNotifierProvider(create: (_) => RegisterViewModel()),
-        ChangeNotifierProvider(create: (_) => NavigationViewModel()), // Make sure this is included
+        ChangeNotifierProvider(
+            create: (_) => NavigationViewModel()), // Make sure this is included
       ],
       child: Scaffold(
         body: Row(
           children: [
-            Sidebar(), // Ensure Sidebar is properly built
+            const Sidebar(), // Ensure Sidebar is properly built
             Expanded(
               child: Column(
                 children: [
-                  Header(), // Header at the top
+                  const Header(), // Header at the top
                   Expanded(
                     child: Consumer<NavigationViewModel>(
                       builder: (context, navigationViewModel, _) {
-                        return navigationViewModel.selectedView; // Ensure this is valid
+                        return navigationViewModel
+                            .selectedView; // Ensure this is valid
                       },
                     ),
                   ),
-                  Footer(), // Footer at the bottom
+                  const Footer(), // Footer at the bottom
                 ],
               ),
             ),
