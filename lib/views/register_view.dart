@@ -67,12 +67,12 @@ class RegisterView extends StatelessWidget {
                             try {
                               await registerViewModel.register();
 
-                              // Navigate to HomeView using NavigationViewModel after successful registration
+                              // Navigate to HomeView after successful registration
                               context
                                   .read<NavigationViewModel>()
                                   .changeView(const HomeView());
                             } catch (e) {
-                              // Show error message
+                              // Mostrar mensaje de error en un SnackBar
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(e.toString())),
                               );

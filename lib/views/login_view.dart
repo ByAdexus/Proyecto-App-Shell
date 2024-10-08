@@ -57,13 +57,29 @@ class LoginView extends StatelessWidget {
                           const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () async {
-                              await loginViewModel
-                                  .login(); // Llama al método de inicio de sesión
-                              if (loginViewModel.isLoggedIn) {
-                                // Navigate to the home or main view after successful login
-                                context
-                                    .read<NavigationViewModel>()
-                                    .changeView(const HomeView());
+                              try {
+                                await loginViewModel
+                                    .login(); // Llama al método de inicio de sesión
+
+                                if (loginViewModel.isLoggedIn) {
+                                  // Navegar a la vista principal si el login fue exitoso
+                                  context
+                                      .read<NavigationViewModel>()
+                                      .changeView(const HomeView());
+                                } else {
+                                  // Mostrar snackbar si el login falla sin excepción
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            'Inicio de sesión fallido. Revisa tus credenciales.')),
+                                  );
+                                }
+                              } catch (e) {
+                                // Mostrar snackbar con el mensaje de error en caso de excepción
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text('Error: ${e.toString()}')),
+                                );
                               }
                             },
                             child: const Text('Iniciar Sesión',

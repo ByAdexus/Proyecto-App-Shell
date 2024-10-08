@@ -91,7 +91,7 @@ class Sidebar extends StatelessWidget {
                         .changeView(const LoginView()); // Redirigir a login
                   }
                 : null,
-            enabled: loginViewModel.isLoggedIn,
+            enabled: loginViewModel.isLoggedIn || registerViewModel.isLoggedIn,
           ),
         ],
       ),
