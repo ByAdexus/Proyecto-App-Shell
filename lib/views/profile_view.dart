@@ -1,91 +1,76 @@
-// profile_view.dart
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../viewmodels/profile_viewmodel.dart';
+import '../viewmodels/login_viewmodel.dart';
 
-class ProfileView extends StatelessWidget {
+class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
 
   @override
+  _ProfileViewState createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView> {
+  int _currentIndex = 0;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final profileViewModel = Provider.of<ProfileViewModel>(context, listen: false);
+    final loggedInUsername = context.read<LoginViewModel>().loggedInUser;
+    profileViewModel.loadUserData(loggedInUsername);
+    profileViewModel.loadUserPosts(loggedInUsername);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final profileViewModel = Provider.of<ProfileViewModel>(context);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Perfil de Usuario')),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          // Si el ancho es mayor a 800, mostrar el layout de 3 columnas
           if (constraints.maxWidth > 800) {
             return Row(
               children: [
-                // Columna de Publicaciones
-                Flexible(
-                  flex: 2,
-                  child: _buildPostsSection(),
-                ),
-                // Columna de Datos Personales
-                Flexible(
-                  flex: 1,
-                  child: _buildUserProfileSection(context),
-                ),
-                // Columna de Configuración
-                Flexible(
-                  flex: 1,
-                  child: _buildEditProfileSection(context),
-                ),
+                Flexible(flex: 2, child: _buildPostsSection(profileViewModel, context)),
+                Flexible(flex: 1, child: _buildUserProfileSection(profileViewModel)),
               ],
             );
-          }
-          // Si el ancho es entre 600 y 800, mostrar 2 columnas
-          else if (constraints.maxWidth > 600) {
-            return Row(
-              children: [
-                Flexible(
-                  flex: 2,
-                  child: _buildPostsSection(),
-                ),
-                Flexible(
-                  flex: 1,
-                  child: _buildUserProfileSection(context),
-                ),
-              ],
-            );
-          }
-          // Si es más pequeño que 600, mostrar 1 columna y permitir cambiar entre secciones
-          else {
-            return _buildSingleColumnView(context);
+          } else {
+            return _buildSingleColumnView(profileViewModel, context);
           }
         },
       ),
     );
   }
 
-  Widget _buildSingleColumnView(BuildContext context) {
-    int _currentIndex = 0;
+  Widget _buildSingleColumnView(ProfileViewModel profileViewModel, BuildContext context) {
     List<Widget> _views = [
-      _buildPostsSection(),
-      _buildUserProfileSection(context),
-      _buildEditProfileSection(context),
+      _buildPostsSection(profileViewModel, context),
+      _buildUserProfileSection(profileViewModel),
     ];
 
     return Column(
       children: [
-        Expanded(
-          child: _views[_currentIndex],
-        ),
+        Expanded(child: _views[_currentIndex]),
         BottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: (index) {
-            _currentIndex = index;
-            (context as Element).markNeedsBuild(); // Force rebuild to show selected view
+            setState(() {
+              _currentIndex = index;
+            });
           },
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.article), label: 'Publicaciones'),
             BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
-            BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Editar'),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildPostsSection() {
+  Widget _buildPostsSection(ProfileViewModel profileViewModel, BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -95,13 +80,32 @@ class ProfileView extends StatelessWidget {
           const SizedBox(height: 16),
           Expanded(
             child: ListView.builder(
-              itemCount: 10,
+              itemCount: profileViewModel.posts.length,
               itemBuilder: (context, index) {
                 return Card(
                   child: ListTile(
-                    leading: const Icon(Icons.article),
-                    title: Text('Publicación #${index + 1}'),
-                    subtitle: const Text('Contenido de la publicación...'),
+                    title: Text(profileViewModel.posts[index]['title']),
+                    subtitle: Text(profileViewModel.posts[index]['description']),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () {
+                            _showEditDialog(context, profileViewModel, index);
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () async {
+                            await profileViewModel.deletePost(profileViewModel.posts[index]['id']);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Publicación eliminada')),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -112,7 +116,54 @@ class ProfileView extends StatelessWidget {
     );
   }
 
-  Widget _buildUserProfileSection(BuildContext context) {
+  void _showEditDialog(BuildContext context, ProfileViewModel profileViewModel, int index) {
+    final titleController = TextEditingController(text: profileViewModel.posts[index]['title']);
+    final descriptionController = TextEditingController(text: profileViewModel.posts[index]['description']);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Editar Publicación'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: const InputDecoration(labelText: 'Título'),
+              ),
+              TextField(
+                controller: descriptionController,
+                decoration: const InputDecoration(labelText: 'Descripción'),
+                maxLines: 4,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                await profileViewModel.updatePost(
+                  profileViewModel.posts[index]['id'],
+                  titleController.text,
+                  descriptionController.text,
+                );
+                Navigator.of(context).pop();
+              },
+              child: const Text('Guardar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancelar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildUserProfileSection(ProfileViewModel profileViewModel) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -122,50 +173,12 @@ class ProfileView extends StatelessWidget {
           const SizedBox(height: 16),
           const CircleAvatar(
             radius: 50,
-            backgroundImage: AssetImage('assets/profile_image.jpg'), // Imagen de perfil (reemplazar con la tuya)
+            backgroundImage: AssetImage('assets/profile_image.jpg'),
           ),
           const SizedBox(height: 16),
-          const Text('Nombre: Juan Pérez', style: TextStyle(fontSize: 18)),
-          const Text('Email: juan.perez@example.com', style: TextStyle(fontSize: 18)),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              // Acción para modificar datos personales
-            },
-            child: const Text('Modificar Perfil'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEditProfileSection(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Editar Perfil', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 16),
-          const Text('Descripción:'),
+          Text('Nombre: ${profileViewModel.username}', style: const TextStyle(fontSize: 18)),
           const SizedBox(height: 8),
-          TextField(
-            maxLines: 4,
-            decoration: InputDecoration(
-              hintText: 'Escribe una nueva descripción...',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              // Acción para guardar cambios
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Descripción actualizada')),
-              );
-            },
-            child: const Text('Guardar Cambios'),
-          ),
+          Text('Email: ${profileViewModel.email}', style: const TextStyle(fontSize: 18)),
         ],
       ),
     );

@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:kerudos/viewmodels/main_viewmodel.dart';
 import 'package:provider/provider.dart';
-import '../viewmodels/register_viewmodel.dart'; // Import your RegisterViewModel
-import 'home_view.dart'; // Import HomeView to navigate to it
+import '../viewmodels/register_viewmodel.dart'; // Importa tu RegisterViewModel
+import 'home_view.dart'; // Importa HomeView para navegar hacia ella
 
 class RegisterView extends StatelessWidget {
   const RegisterView({super.key});
@@ -14,7 +14,7 @@ class RegisterView extends StatelessWidget {
       appBar: AppBar(title: const Text('Registro')),
       body: Center(
         child: SizedBox(
-          width: 400, // Fixed width for the card
+          width: 400,
           child: Card(
             elevation: 4,
             margin: const EdgeInsets.all(16),
@@ -65,11 +65,12 @@ class RegisterView extends StatelessWidget {
                         ElevatedButton(
                           onPressed: () async {
                             try {
-                              await registerViewModel.register();
+                              // Aquí pasamos el contexto al método register()
+                              await registerViewModel.register(context);
 
-                              // Navigate to HomeView after successful registration
+                              // Navegar a HomeView después del registro exitoso
                               context
-                                  .read<NavigationViewModel>()
+                                  .read<MainViewModel>()
                                   .changeView(const HomeView());
                             } catch (e) {
                               // Mostrar mensaje de error en un SnackBar

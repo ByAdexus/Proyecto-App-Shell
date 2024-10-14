@@ -16,26 +16,24 @@ class MainView extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => LoginViewModel()),
         ChangeNotifierProvider(create: (_) => RegisterViewModel()),
-        ChangeNotifierProvider(
-            create: (_) => NavigationViewModel()), // Make sure this is included
+        ChangeNotifierProvider(create: (_) => MainViewModel()), // Cambiado de NavigationViewModel a MainViewModel
       ],
       child: Scaffold(
         body: Row(
           children: [
-            const Sidebar(), // Ensure Sidebar is properly built
+            const Sidebar(), // Asegurarse de que Sidebar se construya correctamente
             Expanded(
               child: Column(
                 children: [
-                  const Header(), // Header at the top
+                  const Header(), // Header en la parte superior
                   Expanded(
-                    child: Consumer<NavigationViewModel>(
-                      builder: (context, navigationViewModel, _) {
-                        return navigationViewModel
-                            .selectedView; // Ensure this is valid
+                    child: Consumer<MainViewModel>( // Cambiado de NavigationViewModel a MainViewModel
+                      builder: (context, mainViewModel, _) {
+                        return mainViewModel.selectedView; // Asegurarse de que esto sea válido
                       },
                     ),
                   ),
-                  const Footer(), // Footer at the bottom
+                  const Footer(), // Footer en la parte inferior
                 ],
               ),
             ),

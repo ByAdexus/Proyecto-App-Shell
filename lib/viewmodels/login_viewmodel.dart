@@ -5,12 +5,17 @@ import 'dart:convert'; // Para codificar y decodificar JSON
 class LoginViewModel with ChangeNotifier {
   String _username = '';
   String _password = '';
-  bool _isLoggedIn = false; // Track login state
+  String _loggedInUser = ''; // Almacena el nombre de usuario logueado
 
   String get username => _username;
-  bool get isLoggedIn => _isLoggedIn; // Provide access to login state
+  String get loggedInUser => _loggedInUser; // Acceso al nombre de usuario logueado
 
-  void setUsername(String username) {
+  void setLoggedInUser(String username) {
+  _loggedInUser = username;
+  notifyListeners();
+}
+
+void setUsername(String username) {  // Agrega este método
     _username = username;
     notifyListeners();
   }
@@ -37,11 +42,11 @@ class LoginViewModel with ChangeNotifier {
             // Iterar sobre los usuarios en Firebase para validar el login
             data.forEach((key, user) {
               if (user['username'] == _username && user['password'] == _password) {
-                _isLoggedIn = true;
+                _loggedInUser = user['username']; // Asigna el nombre de usuario logueado
               }
             });
 
-            if (_isLoggedIn) {
+            if (_loggedInUser.isNotEmpty) {
               notifyListeners();
             } else {
               throw Exception("Usuario o contraseña incorrectos");
@@ -61,8 +66,8 @@ class LoginViewModel with ChangeNotifier {
   }
 
   void logout() {
-    // No necesitamos interactuar con Firebase para cerrar sesión, solo limpiamos el estado local
-    _isLoggedIn = false;
+    // Limpia el nombre de usuario logueado
+    _loggedInUser = '';
     _username = '';
     _password = '';
     notifyListeners();

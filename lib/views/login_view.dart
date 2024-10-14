@@ -5,7 +5,6 @@ import 'package:kerudos/views/home_view.dart';
 import 'package:kerudos/views/register_view.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/login_viewmodel.dart'; // Importa tu ViewModel
-// Importa el NavigationViewModel
 
 class LoginView extends StatelessWidget {
   const LoginView({super.key});
@@ -37,7 +36,7 @@ class LoginView extends StatelessWidget {
                       return Column(
                         children: [
                           TextField(
-                            onChanged: loginViewModel.setUsername,
+                            onChanged: loginViewModel.setUsername, // Asegúrate de que este método exista
                             decoration: const InputDecoration(
                               labelText: 'Usuario',
                               labelStyle: TextStyle(fontSize: 18),
@@ -47,7 +46,7 @@ class LoginView extends StatelessWidget {
                           const SizedBox(height: 16),
                           TextField(
                             obscureText: true,
-                            onChanged: loginViewModel.setPassword,
+                            onChanged: loginViewModel.setPassword, // Asegúrate de que este método exista
                             decoration: const InputDecoration(
                               labelText: 'Contraseña',
                               labelStyle: TextStyle(fontSize: 18),
@@ -58,43 +57,36 @@ class LoginView extends StatelessWidget {
                           ElevatedButton(
                             onPressed: () async {
                               try {
-                                await loginViewModel
-                                    .login(); // Llama al método de inicio de sesión
+                                await loginViewModel.login(); // Llama al método de inicio de sesión
 
-                                if (loginViewModel.isLoggedIn) {
+                                if (loginViewModel.loggedInUser.isNotEmpty) { // Cambiado para usar loggedInUser
+                                  // Actualiza el nombre del usuario en MainViewModel
+                                  context.read<MainViewModel>().loggedInUser = loginViewModel.loggedInUser;
+
                                   // Navegar a la vista principal si el login fue exitoso
-                                  context
-                                      .read<NavigationViewModel>()
-                                      .changeView(const HomeView());
+                                  context.read<MainViewModel>().changeView(const HomeView());
                                 } else {
-                                  // Mostrar snackbar si el login falla sin excepción
+                                  // Mostrar snackbar si el login falla
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text(
-                                            'Inicio de sesión fallido. Revisa tus credenciales.')),
+                                    const SnackBar(content: Text('Inicio de sesión fallido. Revisa tus credenciales.')),
                                   );
                                 }
                               } catch (e) {
                                 // Mostrar snackbar con el mensaje de error en caso de excepción
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text('Error: ${e.toString()}')),
+                                  SnackBar(content: Text('Error: ${e.toString()}')),
                                 );
                               }
                             },
-                            child: const Text('Iniciar Sesión',
-                                style: TextStyle(fontSize: 18)),
+                            child: const Text('Iniciar Sesión', style: TextStyle(fontSize: 18)),
                           ),
                           const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () {
-                              // Use NavigationViewModel to navigate to RegisterView
-                              context
-                                  .read<NavigationViewModel>()
-                                  .changeView(const RegisterView());
+                              // Navegar a RegisterView
+                              context.read<MainViewModel>().changeView(const RegisterView());
                             },
-                            child: const Text('No tienes cuenta? Regístrate',
-                                style: TextStyle(fontSize: 18)),
+                            child: const Text('No tienes cuenta? Regístrate', style: TextStyle(fontSize: 18)),
                           ),
                         ],
                       );
