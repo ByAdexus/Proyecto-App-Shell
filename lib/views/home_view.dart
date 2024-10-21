@@ -15,12 +15,11 @@ class _HomeViewState extends State<HomeView> {
   final TextEditingController descriptionController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    // Llamamos a fetchPosts cuando la vista se inicia para cargar las publicaciones
-    final homeViewModel = Provider.of<HomeViewModel>(context, listen: false);
-    homeViewModel.fetchPosts();
-  }
+void initState() {
+  super.initState();
+  final homeViewModel = Provider.of<HomeViewModel>(context, listen: false);
+  homeViewModel.fetchPosts(); // Asegúrate de que esto esté aquí
+}
 
   @override
   Widget build(BuildContext context) {
@@ -45,10 +44,15 @@ class _HomeViewState extends State<HomeView> {
               itemCount: homeViewModel.posts.length,
               itemBuilder: (context, index) {
                 final post = homeViewModel.posts[index];
+                final postId = post['id']; // Se obtiene el ID de la publicación
+
                 return _buildPostCard(
+                  id: postId,  // Pasar el ID al _buildPostCard
                   author: post['author'] ?? 'Anónimo',
                   title: post['title'] ?? '',
                   description: post['description'] ?? '',
+                  likes: List<String>.from(post['likes'] ?? []),
+                  homeViewModel: homeViewModel,
                 );
               },
             ),
@@ -117,54 +121,71 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
+  // Se añade el ID al método _buildPostCard
   Widget _buildPostCard({
-    required String author,
-    required String title,
-    required String description,
-  }) {
-    return Center(
-      child: SizedBox(
-        width: 900,
-        child: Card(
-          elevation: 4,
-          margin: const EdgeInsets.symmetric(horizontal: 20),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.person, color: Colors.purple),
-                    const SizedBox(width: 8.0),
-                    Text(author, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  ],
+  required String id,  // Recibe el ID de la publicación
+  required String author,
+  required String title,
+  required String description,
+  required List<String> likes,  // Recibe la lista de likes
+  required HomeViewModel homeViewModel,  // Recibe el viewModel
+}) {
+  final isLiked = likes.contains(homeViewModel.loggedInUser);
+
+  return Center(
+    child: SizedBox(
+      width: 900,
+      child: Card(
+        elevation: 4,
+        margin: const EdgeInsets.symmetric(horizontal: 20),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.person, color: Colors.purple),
+                  const SizedBox(width: 8.0),
+                  Text(author, style: const TextStyle(fontWeight: FontWeight.bold)),
+                ],
+              ),
+              const SizedBox(height: 8.0),
+              Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8.0),
+              Container(
+                height: 150,
+                color: Colors.grey[300],
+                child: const Center(
+                  child: Icon(Icons.image, size: 50, color: Colors.grey),
                 ),
-                const SizedBox(height: 8.0),
-                Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8.0),
-                Container(
-                  height: 150,
-                  color: Colors.grey[300],
-                  child: const Center(
-                    child: Icon(Icons.image, size: 50, color: Colors.grey),
-                  ),
-                ),
-                const SizedBox(height: 8.0),
-                Text(description),
-                const SizedBox(height: 8.0),
-                ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.favorite, color: Colors.red),
-                  label: const Text('Me gusta'),
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 8.0),
+              Text(description),
+              const SizedBox(height: 8.0),
+              ElevatedButton.icon(
+  onPressed: () {
+    try {
+      homeViewModel.toggleLike(id, context); // Pasa el contexto aquí
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error.toString())),
+      );
+    }
+  },
+  icon: Icon(
+    Icons.favorite,
+    color: isLiked ? Colors.red : Colors.grey, // Cambia el color según el estado del like
+  ),
+  label: const Text('Me gusta'),
+),
+            ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   @override
   void dispose() {
