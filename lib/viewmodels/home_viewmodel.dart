@@ -84,7 +84,7 @@ class HomeViewModel with ChangeNotifier {
     if (_loginViewModel.loggedInUser.isEmpty) {
       // Muestra un mensaje de error en lugar de lanzar una excepción
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Debes iniciar sesión para dar un like.")),
+        const SnackBar(content: Text("Debes iniciar sesión para dar un like.")),
       );
       return; // Sale del método si no está logueado
     }

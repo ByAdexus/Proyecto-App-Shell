@@ -5,7 +5,7 @@ import 'dart:convert';
 class ProfileViewModel with ChangeNotifier {
   String _username = '';
   String _email = '';
-  List<Map<String, dynamic>> _posts = [];
+  final List<Map<String, dynamic>> _posts = [];
 
   String get username => _username;
   String get email => _email;

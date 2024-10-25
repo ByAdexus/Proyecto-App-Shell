@@ -46,14 +46,14 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   Widget _buildSingleColumnView(ProfileViewModel profileViewModel, BuildContext context) {
-    List<Widget> _views = [
+    List<Widget> views = [
       _buildPostsSection(profileViewModel, context),
       _buildUserProfileSection(profileViewModel),
     ];
 
     return Column(
       children: [
-        Expanded(child: _views[_currentIndex]),
+        Expanded(child: views[_currentIndex]),
         BottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: (index) {
