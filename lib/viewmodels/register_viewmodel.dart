@@ -44,7 +44,7 @@ class RegisterViewModel with ChangeNotifier {
             final data = json.decode(response.body) as Map<String, dynamic>?;
 
             if (data != null) {
-              bool usernameExists = data.values.any((user) => user['username'].toLowerCase() == normalizedUsername);
+              bool usernameExists = data.values.any((user) => user['username']?.toLowerCase() == normalizedUsername);
               if (usernameExists) {
                 throw Exception("El nombre de usuario ya está en uso. Por favor elige otro.");
               }
